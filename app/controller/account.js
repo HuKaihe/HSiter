@@ -5,13 +5,13 @@ class AccountController extends Controller {
 
   async signupIndex() {
     const { ctx } = this;
-    ctx.session.user = null;
+    // ctx.session.user = null;
     await ctx.render('signup.hbs');
   }
 
   async loginIndex() {
     const { ctx } = this;
-    ctx.session.user = null;
+    // ctx.session.user = null;
     await ctx.render('login.hbs');
   }
 
@@ -40,7 +40,7 @@ class AccountController extends Controller {
       signup_time: new Date(),
       last_login_time: new Date(),
       is_admin: false,
-      profile: `/public/image/user_profile/profile_${Math.ceil(Math.random() * 10)}.jpg`,
+      profile: `/public/image/user_profile/profile_${Math.ceil(Math.random() * 10)}.png`,
     };
     const user = await this.service.account.signup(userInfo);
     ctx.session.user = { ...user, password: '' };
@@ -60,7 +60,6 @@ class AccountController extends Controller {
   async login() {
     const { ctx } = this;
     const userInfo = ctx.request.body;
-    console.log(userInfo);
     ctx.user = null;
     const user = await this.service.account.login(userInfo);
     ctx.session.user = { ...user, password: '' };

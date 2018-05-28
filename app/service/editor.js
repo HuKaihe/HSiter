@@ -28,7 +28,6 @@ class HomeService extends Service {
       },
     };
     const result = (await this.app.mysql.update('page', row, option));
-    console.log('result', result);
     return result.affectedRows === 1;
   }
 }

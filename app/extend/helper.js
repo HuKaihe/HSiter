@@ -30,7 +30,6 @@ const sendMail = function(recipient, subject, html) {
     html,
   }, function(error) {
     if (error) {
-      console.log(error);
       console.log('发送失败');
       return;
     }

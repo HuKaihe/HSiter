@@ -19,7 +19,9 @@ module.exports = app => {
 
   // 页面管理
   router.post('/pageManager/newPage', middleware.checkLogin, controller.pageManager.addNewPage);
+  router.post('/pageManager/editPage', middleware.checkLogin, controller.pageManager.editPage);
   router.post('/pageManager/deletePage', middleware.checkLogin, controller.pageManager.deletePage);
+  router.post('/pageManager/copyPage', middleware.checkLogin, controller.pageManager.copyPage);
 
   // 账号管理
   router.post('/account/checkEmailValid', controller.account.checkEmailValid);

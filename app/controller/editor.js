@@ -22,13 +22,12 @@ class EditorController extends Controller {
       await ctx.render('404.hbs');
       return;
     }
-    const { page_schema, page_name, author, create_time, last_operate_time } = pageInfo;
+    const { page_schema, page_title, author, create_time, last_operate_time } = pageInfo;
     await ctx.render('editor.hbs', {
-      page_name,
+      page_title,
       page_schema,
       pageInfo: JSON.stringify({
         page_id,
-        page_name,
         author,
         create_time,
         last_operate_time,
@@ -50,13 +49,12 @@ class EditorController extends Controller {
       await ctx.render('404.hbs');
       return;
     }
-    const { page_schema, page_name, author, create_time, last_operate_time } = pageInfo;
+    const { page_schema, page_title, author, create_time, last_operate_time } = pageInfo;
     await ctx.render('preview.hbs', {
-      page_name,
+      page_title,
       page_schema,
       pageInfo: JSON.stringify({
         page_id,
-        page_name,
         author,
         create_time,
         last_operate_time,
