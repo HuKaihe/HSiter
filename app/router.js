@@ -4,18 +4,26 @@
  * @param {Egg.Application} app - egg application
  */
 module.exports = app => {
-  const { router, controller } = app;
+  const { router, controller, middleware } = app;
 
-  // 主页
-  router.get('/', controller.pageManager.index);
+  // 视图层
+  router.get('/', middleware.checkLogin, controller.pageManager.index);
+  router.get('/editor', middleware.checkLogin, controller.editor.index);
+  router.get('/preview', middleware.checkLogin, controller.editor.preview); // 页面预览
+  router.get('/pageManager', middleware.checkLogin, controller.pageManager.index);
+  router.get('/signup', controller.account.signupIndex);
+  router.get('/login', controller.account.loginIndex);
 
   // 编辑器
-  router.get('/editor', controller.editor.index); // 视图接口
-  router.post('/editor/save', controller.editor.save); // 保存页面
-  router.get('/preview', controller.editor.preview); // 页面预览
+  router.post('/editor/save', middleware.checkLogin, controller.editor.save); // 保存页面
 
   // 页面管理
-  router.get('/pageManager', controller.pageManager.index);
-  router.post('/pageManager/newPage', controller.pageManager.addNewPage);
-  router.post('/pageManager/deletePage', controller.pageManager.deletePage);
+  router.post('/pageManager/newPage', middleware.checkLogin, controller.pageManager.addNewPage);
+  router.post('/pageManager/deletePage', middleware.checkLogin, controller.pageManager.deletePage);
+
+  // 账号管理
+  router.post('/account/checkEmailValid', controller.account.checkEmailValid);
+  router.post('/account/signup', controller.account.signup);
+  router.post('/account/login', controller.account.login);
+  router.post('/account/signout', middleware.checkLogin, controller.account.signout);
 };

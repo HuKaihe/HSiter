@@ -19,12 +19,12 @@ class HomeService extends Service {
     });
     return collectionList;
   }
-  async updatePageSchema(page_id, page_schema, last_operate_time) {
+  async updatePageSchema({ page_id, user_id, page_schema, last_operate_time }) {
     const row = { page_schema, last_operate_time };
-    console.log(page_schema);
     const option = {
       where: {
         page_id,
+        user_id,
       },
     };
     const result = (await this.app.mysql.update('page', row, option));
