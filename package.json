@@ -12,6 +12,7 @@
     "egg-security": "^2.0.0",
     "egg-session": "^3.1.0",
     "egg-view-handlebars": "^2.0.1",
+    "encrypter": "^1.0.0",
     "nodemailer": "^4.6.2",
     "nodemailer-smtp-transport": "^2.7.4"
   },

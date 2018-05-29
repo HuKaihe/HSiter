@@ -1,6 +1,7 @@
 'use strict';
 
 const http = require('http');
+const Encrypter = require('encrypter');
 const nodemailer = require('nodemailer');
 const smtpTransport = require('nodemailer-smtp-transport');
 const config = require('../../config/.config.js');
@@ -71,4 +72,27 @@ const getIpInfo = function(req, cb) {
   }).on('error', function(e) { cb(e); });
 };
 
-module.exports = { sendMail, getIpInfo, getRandomString };
+const encrypt = function(data, key) {
+  // 数据加密
+  const originKey = getRandomString();
+  const encryptedKey = key || originKey.slice(1, 3) + originKey.slice(2, 3) + originKey.slice(7, 10);
+  const encrypter = new Encrypter(encryptedKey);
+  const encrypted = encrypter.encrypt(typeof data === 'string' ? data : JSON.stringify(data));
+  return {
+    originKey,
+    value: encrypted,
+    encryptedKey,
+  };
+};
+
+// const encrypt = function(data) {
+//   // dev
+//   return {
+//     originKey: '',
+//     encryptedKey: '',
+//     value: typeof data === 'string' ? data : JSON.stringify(data),
+//   };
+// };
+
+
+module.exports = { sendMail, getIpInfo, getRandomString, encrypt };

@@ -8,9 +8,17 @@ class PageManagerController extends Controller {
     const ctx = this.ctx;
     const { user_id, nickname, profile } = ctx.session.user;
     const pageList = await this.service.pageManager.getPageList(user_id);
+
+    // 数据加密，user和pageList使用同一把秘钥加密
+    const encryptedPageList = ctx.helper.encrypt(pageList);
+    const { encryptedKey, originKey } = encryptedPageList;
+    const encryptedUser = ctx.helper.encrypt({
+      nickname, profile,
+    }, encryptedKey);
     await ctx.render('pageManager.hbs', {
-      pageList: JSON.stringify(pageList),
-      user: JSON.stringify({ nickname, profile }),
+      originKey,
+      pageList: encryptedPageList.value,
+      user: encryptedUser.value,
     });
   }
 
