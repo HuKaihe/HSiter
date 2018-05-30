@@ -16,6 +16,7 @@ module.exports = app => {
 
   // 编辑器
   router.post('/editor/save', middleware.checkLogin, controller.editor.save); // 保存页面
+  router.post('/editor/publish', middleware.checkLogin, controller.editor.publish); // 保存页面
 
   // 页面管理
   router.post('/pageManager/newPage', middleware.checkLogin, controller.pageManager.addNewPage);

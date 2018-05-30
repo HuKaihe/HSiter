@@ -1,6 +1,8 @@
 'use strict';
 
 const Service = require('egg').Service;
+const fs = require('fs');
+const path = require('path');
 
 class HomeService extends Service {
   async getComponentTypeInfoList() {
@@ -29,6 +31,30 @@ class HomeService extends Service {
     };
     const result = (await this.app.mysql.update('page', row, option));
     return result.affectedRows === 1;
+  }
+  async publishPage(page_id, user_id) {
+    const option = {
+      where: {
+        page_id,
+        user_id,
+      },
+    };
+    const result = (await this.app.mysql.update('page', { is_publish: 1 }, option));
+    return result.affectedRows === 1;
+  }
+  async publishPageRender({ bodyHTML, page_title, user_id, page_url }) {
+    const absoluteDirUrl = path.resolve(__dirname, `../public/pages/${user_id}`);
+    const absolutePageUrl = path.resolve(__dirname, `../public/pages/${user_id}/${page_url}.html`);
+    const absoluteTemplateUrl = path.resolve(__dirname, '../view/myPage.hbs');
+
+    const dirExist = fs.existsSync(absoluteDirUrl);
+    if (!dirExist) {
+      fs.mkdirSync(absoluteDirUrl);
+    }
+
+    const template = fs.readFileSync(absoluteTemplateUrl).toString();
+    const HTML = template.replace('{{body}}', bodyHTML).replace('{{page_title}}', page_title);
+    fs.writeFileSync(absolutePageUrl, HTML);
   }
 }
 

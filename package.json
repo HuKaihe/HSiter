@@ -4,6 +4,7 @@
   "description": "Website build system",
   "private": true,
   "dependencies": {
+    "co-fs": "^1.2.0",
     "egg": "^2.2.1",
     "egg-cors": "^2.0.0",
     "egg-generic-session": "^2.0.0",

@@ -7,7 +7,7 @@ class EditorController extends Controller {
     const ctx = this.ctx;
     const { user_id, nickname, profile } = ctx.session.user;
 
-    const page_id = this.ctx.query.page;
+    const page_id = ctx.query.page;
 
     const componentTypeInfoList = await this.service.editor.getComponentTypeInfoList() || [];
     const componentCollectionList = await this.service.editor.getCollectionList() || [];
@@ -22,7 +22,7 @@ class EditorController extends Controller {
       await ctx.render('404.hbs');
       return;
     }
-    const { page_schema, page_title, author, create_time, last_operate_time } = pageInfo;
+    const { page_schema, page_title, author, create_time, last_operate_time, page_url } = pageInfo;
 
     // 数据加密
     const encryptedPageSchema = ctx.helper.encrypt(page_schema);
@@ -33,6 +33,8 @@ class EditorController extends Controller {
       author,
       create_time,
       last_operate_time,
+      page_url,
+      page_title,
     }, encryptedKey);
     const encryptedComponentInfoGroup = ctx.helper.encrypt(componentInfoGroup, encryptedKey);
     const encryptedComponentTypeInfoList = ctx.helper.encrypt(componentTypeInfoList, encryptedKey);
@@ -53,13 +55,13 @@ class EditorController extends Controller {
     const ctx = this.ctx;
     const { user_id } = ctx.session.user;
 
-    const page_id = this.ctx.query.page;
+    const page_id = ctx.query.page;
     const pageInfo = await this.service.pageManager.getPage(page_id, user_id);
     if (!pageInfo) {
       await ctx.render('404.hbs');
       return;
     }
-    const { page_schema, page_title, author, create_time, last_operate_time } = pageInfo;
+    const { page_schema, page_title, author, create_time, last_operate_time, page_url } = pageInfo;
 
     // 数据加密
     const encryptedPageSchema = ctx.helper.encrypt(page_schema);
@@ -69,6 +71,8 @@ class EditorController extends Controller {
       author,
       create_time,
       last_operate_time,
+      page_url,
+      page_title,
     }, encryptedKey);
     await ctx.render('preview.hbs', {
       originKey,
@@ -76,6 +80,25 @@ class EditorController extends Controller {
       page_schema: encryptedPageSchema.value,
       pageInfo: encryptedPageInfo.value,
     });
+  }
+
+  async publish() {
+    const ctx = this.ctx;
+    const { user_id } = ctx.session.user;
+    const { page_id, bodyHTML, page_url, page_title } = ctx.request.body;
+    const result = await this.service.editor.publishPage(page_id, user_id);
+    if (!result) {
+      ctx.body = { code: 500, msg: '服务器异常' };
+      return;
+    }
+    const newPageUrl = `/public/pages/${user_id}/${page_url}.html`;
+    try {
+      await ctx.service.editor.publishPageRender({ bodyHTML, page_title, user_id, page_url });
+      ctx.body = { code: 200, payload: { newPageUrl }, msg: 'success' };
+    } catch (e) {
+      console.error(e);
+      ctx.body = { code: 500, newPageUrl, msg: '服务器错误' };
+    }
   }
 
   async save() {
