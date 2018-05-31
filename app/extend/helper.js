@@ -7,7 +7,7 @@ const smtpTransport = require('nodemailer-smtp-transport');
 const config = require('../../config/.config.js');
 
 function getRandomString() {
-  return Math.random().toString(36).substr(2) + new Date().getTime();
+  return Math.random().toString(36).substr(2) + new Date().getTime() + Math.random().toString(36).substr(2);
 }
 
 const mailSender = nodemailer.createTransport(smtpTransport({
