@@ -54,8 +54,7 @@ class EditorController extends Controller {
   async preview() {
     const ctx = this.ctx;
     const { user_id } = ctx.session.user;
-    const isPrePublish = ctx.request.url.split('?')[0] === '/prePublish';
-
+    const previewType = ctx.request.url.split('?')[0];
     const page_id = ctx.query.page;
     const pageInfo = await this.service.pageManager.getPage(page_id, user_id);
     if (!pageInfo) {
@@ -63,7 +62,11 @@ class EditorController extends Controller {
       return;
     }
     const { page_schema, page_title, author, create_time, last_operate_time, page_url } = pageInfo;
-
+    const pageTitleMap = {
+      '/prePublish': page_title + '——预发布',
+      '/preview': page_title + '——实时预览',
+      '/screenshot': page_title + '——快照',
+    };
     // 数据加密
     const encryptedPageSchema = ctx.helper.encrypt(page_schema);
     const { encryptedKey, originKey } = encryptedPageSchema;
@@ -76,9 +79,8 @@ class EditorController extends Controller {
       page_title,
     }, encryptedKey);
     await ctx.render('preview.hbs', {
-      pp: isPrePublish,
       originKey,
-      page_title: isPrePublish ? (page_title + '——预发') : (page_title + '——预览'),
+      page_title: pageTitleMap[previewType],
       page_schema: encryptedPageSchema.value,
       pageInfo: encryptedPageInfo.value,
     });
