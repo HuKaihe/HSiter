@@ -54,6 +54,7 @@ class EditorController extends Controller {
   async preview() {
     const ctx = this.ctx;
     const { user_id } = ctx.session.user;
+    const isPrePublish = ctx.request.url.split('?')[0] === '/prePublish';
 
     const page_id = ctx.query.page;
     const pageInfo = await this.service.pageManager.getPage(page_id, user_id);
@@ -75,8 +76,9 @@ class EditorController extends Controller {
       page_title,
     }, encryptedKey);
     await ctx.render('preview.hbs', {
+      pp: isPrePublish,
       originKey,
-      page_title,
+      page_title: isPrePublish ? (page_title + '——预发') : (page_title + '——预览'),
       page_schema: encryptedPageSchema.value,
       pageInfo: encryptedPageInfo.value,
     });
@@ -86,12 +88,12 @@ class EditorController extends Controller {
     const ctx = this.ctx;
     const { user_id } = ctx.session.user;
     const { page_id, bodyHTML, page_url, page_title } = ctx.request.body;
-    const result = await this.service.editor.publishPage(page_id, user_id);
+    const newPageUrl = `/public/pages/${user_id}/${page_url}.html`;
+    const result = await this.service.editor.publishPage({ page_id, user_id, publish_url: newPageUrl, publish_date: new Date() });
     if (!result) {
       ctx.body = { code: 500, msg: '服务器异常' };
       return;
     }
-    const newPageUrl = `/public/pages/${user_id}/${page_url}.html`;
     try {
       await ctx.service.editor.publishPageRender({ bodyHTML, page_title, user_id, page_url });
       ctx.body = { code: 200, payload: { newPageUrl }, msg: 'success' };
@@ -105,8 +107,7 @@ class EditorController extends Controller {
     const ctx = this.ctx;
     const { user_id } = ctx.session.user;
     const { page_id, page_schema } = ctx.request.body;
-    const last_operate_time = new Date();
-    const result = await this.service.editor.updatePageSchema({ page_id, user_id, page_schema, last_operate_time });
+    const result = await this.service.editor.updatePageSchema({ page_id, user_id, page_schema });
     if (!result) {
       ctx.body = {
         code: 500,

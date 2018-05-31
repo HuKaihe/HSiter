@@ -10,6 +10,7 @@ module.exports = app => {
   router.get('/', middleware.checkLogin, controller.pageManager.index);
   router.get('/editor', middleware.checkLogin, controller.editor.index);
   router.get('/preview', middleware.checkLogin, controller.editor.preview); // 页面预览
+  router.get('/prePublish', middleware.checkLogin, controller.editor.preview); // 页面预览
   router.get('/pageManager', middleware.checkLogin, controller.pageManager.index);
   router.get('/signup', controller.account.signupIndex);
   router.get('/login', controller.account.loginIndex);

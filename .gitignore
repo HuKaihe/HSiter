@@ -12,3 +12,4 @@ run/
 *.un~
 .vscode
 .config.js
+app/public/pages/

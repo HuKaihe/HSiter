@@ -21,8 +21,8 @@ class HomeService extends Service {
     });
     return collectionList;
   }
-  async updatePageSchema({ page_id, user_id, page_schema, last_operate_time }) {
-    const row = { page_schema, last_operate_time };
+  async updatePageSchema({ page_id, user_id, page_schema }) {
+    const row = { page_schema };
     const option = {
       where: {
         page_id,
@@ -32,14 +32,14 @@ class HomeService extends Service {
     const result = (await this.app.mysql.update('page', row, option));
     return result.affectedRows === 1;
   }
-  async publishPage(page_id, user_id) {
+  async publishPage({ page_id, user_id, publish_date, publish_url }) {
     const option = {
       where: {
         page_id,
         user_id,
       },
     };
-    const result = (await this.app.mysql.update('page', { is_publish: 1 }, option));
+    const result = (await this.app.mysql.update('page', { is_publish: 1, publish_date, publish_url }, option));
     return result.affectedRows === 1;
   }
   async publishPageRender({ bodyHTML, page_title, user_id, page_url }) {
