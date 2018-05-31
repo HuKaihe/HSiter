@@ -31,7 +31,7 @@ class PageManagerController extends Controller {
       page_id,
       author,
       user_id,
-      page_schema: '{layoutSchema:[],componentSchema:[],baseConfig:{}}',
+      page_schema: JSON.stringify({ layoutSchema: [], componentSchema: [], baseConfig: {} }),
       create_time: new Date(),
       last_operate_time: new Date(),
       ...reqData,
@@ -112,8 +112,21 @@ class PageManagerController extends Controller {
     const ctx = this.ctx;
     const { user_id } = ctx.session.user;
     const { page_id } = ctx.request.body;
-    await this.service.pageManager.deletePage(page_id, user_id);
+    const page = await this.service.pageManager.getPage(page_id, user_id);
+    const { is_publish, publish_url } = page;
+    if (is_publish) {
+      try {
+        await this.service.pageManager.deleteStaticPage(page_id, user_id, publish_url);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    const result = await this.service.pageManager.deletePage(page_id, user_id);
     const pageList = await this.service.pageManager.getPageList(user_id);
+    if (!result) {
+      ctx.body = { code: 300, msg: 'fail' };
+      return;
+    }
     ctx.body = {
       code: 200,
       msg: '',

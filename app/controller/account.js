@@ -35,8 +35,11 @@ class AccountController extends Controller {
 
   async signup() {
     const { ctx } = this;
+    // const { nickname } = ctx.request.body;
+    // const nickname_pinyin = await this.service.account.toPinyin(nickname);
     const userInfo = {
       ...ctx.request.body,
+      // nickname_pinyin,
       signup_time: new Date(),
       last_login_time: new Date(),
       is_admin: false,

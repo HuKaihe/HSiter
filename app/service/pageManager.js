@@ -1,6 +1,8 @@
 'use strict';
 
 const Service = require('egg').Service;
+const fs = require('fs');
+const path = require('path');
 
 class PageService extends Service {
   async getPageList(user_id) {
@@ -29,6 +31,16 @@ class PageService extends Service {
   async deletePage(page_id, user_id) {
     const result = await this.app.mysql.delete('page', { page_id, user_id });
     return result;
+  }
+  async deleteStaticPage(page_id, user_id, publish_url) {
+    const result = await this.app.mysql.select('page', { where: { user_id, publish_url }, orders: [[ 'create_time', 'desc' ]] });
+    if (result && result.length === 1) {
+      const absoluteFilePath = path.resolve(__dirname, '..' + publish_url);
+      const fileExist = fs.existsSync(absoluteFilePath);
+      if (fileExist) {
+        fs.unlinkSync(absoluteFilePath);
+      }
+    }
   }
 }
 

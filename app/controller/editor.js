@@ -89,7 +89,20 @@ class EditorController extends Controller {
   async publish() {
     const ctx = this.ctx;
     const { user_id } = ctx.session.user;
-    const { page_id, bodyHTML, page_url, page_title } = ctx.request.body;
+    const { page_id, bodyHTML } = ctx.request.body;
+    const {
+      is_publish,
+      page_title,
+      page_url,
+      publish_url: old_publish_url,
+    } = await this.service.pageManager.getPage(page_id, user_id);
+    if (is_publish) {
+      try {
+        this.service.pageManager.deleteStaticPage(page_id, user_id, old_publish_url);
+      } catch (e) {
+        console.error(e);
+      }
+    }
     const newPageUrl = `/public/pages/${user_id}/${page_url}.html`;
     const result = await this.service.editor.publishPage({ page_id, user_id, publish_url: newPageUrl, publish_date: new Date() });
     if (!result) {

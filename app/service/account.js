@@ -1,6 +1,7 @@
 'use strict';
 
 const Service = require('egg').Service;
+const pinyin = require('pinyin');
 
 class AccountService extends Service {
   async checkEmailValid(email) {
@@ -21,6 +22,16 @@ class AccountService extends Service {
   async login(userInfo) {
     const user = (await this.app.mysql.get('user', userInfo));
     return user;
+  }
+  async toPinyin(nickname) {
+    const pinyinArr = pinyin(nickname, {
+      style: pinyin.STYLE_NORMAL,
+    });
+    let result = '';
+    pinyinArr.forEach(i => {
+      result += i[0];
+    });
+    return result;
   }
 }
 

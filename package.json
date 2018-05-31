@@ -15,7 +15,8 @@
     "egg-view-handlebars": "^2.0.1",
     "encrypter": "^1.0.0",
     "nodemailer": "^4.6.2",
-    "nodemailer-smtp-transport": "^2.7.4"
+    "nodemailer-smtp-transport": "^2.7.4",
+    "pinyin": "^2.8.3"
   },
   "devDependencies": {
     "autod": "^3.0.1",
